@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "WebSearch",
+      "WebFetch(domain:www.zakgear.com)",
+      "WebFetch(domain:www.otvinta.com)",
+      "WebFetch(domain:www.tec-science.com)",
+      "WebFetch(domain:involute.pro)",
+      "WebFetch(domain:evolventdesign.com)",
+      "WebFetch(domain:)",
+      "WebFetch(domain:camnetics.com)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
