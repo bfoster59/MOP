@@ -1,0 +1,14 @@
+# Gear Metrology API Requirements
+# Core API framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Additional utilities (optional)
+python-multipart==0.0.6  # For form data support
+requests==2.31.0  # For API testing client
+
+# Development dependencies (optional)
+# pytest==7.4.3  # For unit testing
+# pytest-asyncio==0.21.1  # For async testing
+# httpx==0.25.2  # For async HTTP client testing
