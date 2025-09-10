@@ -303,6 +303,9 @@ def mow_helical_external_dp(z: int, normal_DP: float, normal_alpha_deg: float, t
     """
     Measurement Over Pins for helical external gears.
     
+    Uses standard AGMA method: convert normal parameters to transverse parameters
+    and apply standard involute gear measurement equations.
+    
     Args:
         z: Number of teeth
         normal_DP: Normal diametral pitch [1/inch]
@@ -314,47 +317,43 @@ def mow_helical_external_dp(z: int, normal_DP: float, normal_alpha_deg: float, t
     Returns:
         Result object with helical gear calculations
         
-    Note: Includes correction for axial pin positioning in helical gears based on
-    empirical analysis matching AGMA/GearCutter reference calculations.
+    Note: Uses standard AGMA/ISO helical gear measurement approach with
+    normal-to-transverse parameter conversion.
     """
     
-    # Convert to transverse parameters for calculation
+    # For spur gears (helix ≈ 0°), use direct spur calculation
+    if abs(helix_deg) < 0.01:
+        return mow_spur_external_dp(z, normal_DP, normal_alpha_deg, t, d)
+    
+    # Convert to transverse parameters for helical gears
     trans_pa_deg, trans_dp, base_helix_deg, lead_coeff = helical_conversions(normal_alpha_deg, helix_deg, normal_DP)
     
-    # CRITICAL: Convert normal tooth thickness to transverse tooth thickness
-    # For helical gears: transverse_thickness = normal_thickness / cos(helix_angle)
+    # Convert normal tooth thickness to transverse tooth thickness
+    # Standard conversion: transverse_thickness = normal_thickness / cos(helix_angle)
     helix_rad = helix_deg * (PI_HIGH_PRECISION / 180.0)
-    if abs(helix_deg) < 0.01:  # Essentially spur gear
-        trans_tooth_thickness = t
-    else:
-        trans_tooth_thickness = t / math.cos(helix_rad)
+    trans_tooth_thickness = t / math.cos(helix_rad)
     
-    # Use existing spur gear calculation with transverse parameters and converted thickness
+    # Use standard spur gear calculation with transverse parameters
+    # This is the correct AGMA approach for helical gears
     result = mow_spur_external_dp(z, trans_dp, trans_pa_deg, trans_tooth_thickness, d)
     
-    # IMPROVED HELICAL CORRECTION: Multi-term correction for accurate results across all helix angles
-    # Based on comprehensive analysis of helix angle variations from 0° to 45°
-    # Uses range-specific coefficients and non-linear terms for precision
-    if abs(helix_deg) > 0.01:  # Apply only to helical gears
-        helical_correction = calculate_improved_helical_correction(helix_deg, normal_alpha_deg, d, is_external=True)
-        result.MOW += helical_correction
-        
-        # Store correction details for diagnostics
-        result.helical_correction = helical_correction
-    
-    # Store additional helical parameters in the result
+    # Store helical-specific parameters for reference
     result.helix_deg = helix_deg
     result.normal_pa_deg = normal_alpha_deg
     result.normal_dp = normal_DP
     result.trans_pa_deg = trans_pa_deg
     result.trans_dp = trans_dp
     result.base_helix_deg = base_helix_deg
+    result.helical_correction = 0.0  # No additional correction needed
     
     return result
 
 def mbp_helical_internal_dp(z: int, normal_DP: float, normal_alpha_deg: float, s: float, d: float, helix_deg: float = 0.0) -> Result:
     """
     Measurement Between Pins for helical internal gears.
+    
+    Uses standard AGMA method: convert normal parameters to transverse parameters
+    and apply standard involute gear measurement equations.
     
     Args:
         z: Number of teeth
@@ -367,41 +366,34 @@ def mbp_helical_internal_dp(z: int, normal_DP: float, normal_alpha_deg: float, s
     Returns:
         Result object with helical gear calculations
         
-    Note: Includes correction for axial pin positioning in helical gears based on
-    empirical analysis matching AGMA/GearCutter reference calculations.
+    Note: Uses standard AGMA/ISO helical gear measurement approach with
+    normal-to-transverse parameter conversion.
     """
     
-    # Convert to transverse parameters for calculation
+    # For spur gears (helix ≈ 0°), use direct spur calculation
+    if abs(helix_deg) < 0.01:
+        return mbp_spur_internal_dp(z, normal_DP, normal_alpha_deg, s, d)
+    
+    # Convert to transverse parameters for helical gears
     trans_pa_deg, trans_dp, base_helix_deg, lead_coeff = helical_conversions(normal_alpha_deg, helix_deg, normal_DP)
     
-    # CRITICAL: Convert normal space width to transverse space width
-    # For helical gears: transverse_space = normal_space / cos(helix_angle)
+    # Convert normal space width to transverse space width
+    # Standard conversion: transverse_space = normal_space / cos(helix_angle)
     helix_rad = helix_deg * (PI_HIGH_PRECISION / 180.0)
-    if abs(helix_deg) < 0.01:  # Essentially spur gear
-        trans_space_width = s
-    else:
-        trans_space_width = s / math.cos(helix_rad)
+    trans_space_width = s / math.cos(helix_rad)
     
-    # Use existing spur gear calculation with transverse parameters and converted space width
+    # Use standard spur gear calculation with transverse parameters
+    # This is the correct AGMA approach for helical gears
     result = mbp_spur_internal_dp(z, trans_dp, trans_pa_deg, trans_space_width, d)
     
-    # IMPROVED HELICAL CORRECTION: Multi-term correction for accurate results across all helix angles
-    # Based on comprehensive analysis of helix angle variations from 0° to 45°
-    # Uses range-specific coefficients and non-linear terms for precision
-    if abs(helix_deg) > 0.01:  # Apply only to helical gears
-        helical_correction = calculate_improved_helical_correction(helix_deg, normal_alpha_deg, d, is_external=False)
-        result.MOW -= helical_correction  # Subtract for internal gears
-        
-        # Store correction details for diagnostics
-        result.helical_correction = helical_correction
-    
-    # Store additional helical parameters in the result
+    # Store helical-specific parameters for reference
     result.helix_deg = helix_deg
     result.normal_pa_deg = normal_alpha_deg
     result.normal_dp = normal_DP
     result.trans_pa_deg = trans_pa_deg
     result.trans_dp = trans_dp
     result.base_helix_deg = base_helix_deg
+    result.helical_correction = 0.0  # No additional correction needed
     
     return result
 

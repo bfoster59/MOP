@@ -19,7 +19,9 @@
       "WebFetch(domain:khkgears.net)",
       "WebFetch(domain:sdp-si.com)",
       "WebFetch(domain:drivetrainhub.com)",
-      "WebFetch(domain:www.khkgears.us)"
+      "WebFetch(domain:www.khkgears.us)",
+      "Bash(find:*)",
+      "Bash(pip install:*)"
     ],
     "deny": [],
     "ask": []
